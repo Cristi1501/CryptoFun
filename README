@@ -1,0 +1,58 @@
+========================
+ TUDOR Cristian - 321CB
+========================
+
+
+TASK 1:
+
+Adresa sirului se afla in ecx, iar adresa cheii o aflu si o memorez in edx. Pun pe stiva cele 2 adrese si apelez xor_strings.
+
+xor_strings: 
+Imi iau un contor pentru a parcurge cele 2 siruri (esi) si intru in label-ul byte_by_byte. Acolo incrementez contorul si fac xor pe cei doi octeti (cel din mesajul criptat si cel din cheie), apoi suprascriu. Repet pana ajung la null.
+
+
+TASK 2:
+
+Aflu adresa sirului si o pun in edx, apoi apelez rolling_xor.
+
+rolling_xor:
+Primul octet ramane neschimbat, asa ca o sa plec cu contorul de la 0 (urmand sa il incrementez la inceputul label-ului criptare) si o sa memorez acel octet. Continui in label-ul criptare, fac xor intre octetul actual si cel precedent, memorez octetul inainte sa fie modificat (pentru a-l folosi la urmatorul xor), apoi suprascriu. Repet pana ajung la null.
+
+
+TASK 3:
+
+Aflu cele 2 adrese si le pun in ecx si edx, apoi apelez xor_hex_strings.
+
+xor_hex_strings:
+Registrul esi il folosesc pentru a parcurge sirurile in hexa, iar edi pentru a suprascrie. La final voi avea esi = 2*edi. Scad 48 din fiecare octet (cei 2 din mesaj si cei 2 din cheie), apoi verific daca sunt cifre sau litere. Ideea e ca 0 in ASCII este 48 si pentru a nu avea 2 cazuri (litere si cifre) am ales metoda asta. Daca este litera mai scad 39 (a = 97 in ASCII, a = 97-48-39 = 10) din acel octet. Siftez primul octet, apoi il adun pe celalalt. Fac asta atat la cheie, cat si la mesaj si repet pana cand ajung la null. La final pun null mesajului si cheii si apelez functia de la task-ul 1 pentru a face xor byte cu byte.
+
+
+TASK 4:
+
+Aflu adresa sirului si o pun in edx, apoi apelez base32decode.
+
+base32decode:
+Folosesc registrul esi pentru a parcurge si continui in label-ul decodare. Iau byte-ul din sir, scad 24 din el pentru a avea un singur caz, cel cu litere si repet pana ajung la =. Ideea e ca in ASCII 2 este 50, iar in base32 este 26, acesta fiind motivul pentru care scad 24 din acel octet. Daca este litera mai scad inca 41 pentru ca in total sa fie scazut 65. Dupa ce termin apelez functie.
+
+functie:
+Implementarea rezolvarii e oarecum simpla. Iau primul octet care de fapt are doar 5 biti (primii 3 sunt mereu 000) il siftez la stanga si il suprascriu. Apoi ii iau pe ceilalti 3 biti ai urmatorului byte si ii adaug la precedentul care deja a fost suprascris. Apoi ii iau pe ceilalti 2 biti, pe cei 5 urmatori si inca unul din alt octet si tot asa pentru a forma octeti completi. Ideea e ca acest lucru il fac cu 8 octeti ca sa formez 5 completi. Repet asta pana cand contorul ajunge la valoarea 1. La final oricum se vor gasi zerourile (cate egaluri, atatea zerouri) pentru ca am folosit siftarile.
+
+
+TASK 5:
+
+Aflu adresa sirului si o pun in edx, pun in eax prima valoare posibila a cheii si apelez bruteforce_singlebyte_xor. Verific daca rezultatul este corect (verifica_rezultat) si afisez rezultatul si cheia. Daca nu este corect apelez functia bruteforce_singlebyte_xor din nou pentru a face iar xor si a avea pe stiva sirul initial. Repet pana cand cheia este corecta.
+
+bruteforce_singlebyte_xor:
+Pentru a parcurge sirul folosesc registrul esi. Iau fiecare byte, fac xor cu cheia, apoi suprascriu. Repet pana dau de null.
+
+verifica_rezultat:
+Parcurg folosind contorul esi si verific daca subsirul "force" se regaseste in sirul decriptat. Daca se gaseste, edi devine 1 pentru a sti in main cand sirul este corect.
+
+
+TASK 6:
+
+Aflu adresa sirului si o pun in edx, apoi imi rezerv loc pe stiva pentru sirul cu caractere de inlocuit. Pun in acel loc sirul, apoi adresa acestuia o pun in eax. Cu cele 2 adrese apelez break_substitution si apoi afisez rezultatele. 
+Pentru a afla sirul am creat un program in C care sa imi returneze frecventa aparitiei fiecarui caracter. Am pus # in locul tuturor literelor, iar apoi am inceput sa inlocuiesc caracterele # cu caracterele obtinute in ordinea frecventei, tinand cont si de caracterele spatiu si punct. M-am gandit ca spatiu apare intr-un text mai frecvent decat litera 'e', asa ca am pus-o inainte. Am pus primele 3 litere (e t a) si apoi am inceput deducerea cuvintelor si inlocuirea celorlalte caractere #.
+
+break_substitution:
+Pentru a parcurge mesajul folosesc registrul esi, iar pentru a parcurge tabla de substitutie folosesc registrul edi. Compar octetii (cel din mesaj si cel de pe tabla) si verific daca sunt egali. Daca sunt, fac inlocuirea, iar daca nu, parcurg tabla pana gasesc sau pana ajung la null. Repet acesti pasi pana la capatul mesajului initial. 
